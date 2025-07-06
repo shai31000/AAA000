@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>נגן HLS אוטומטי</title>
+</head>
+<body>
+  <video id="video" controls muted autoplay style="width: 600px;"></video>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    const video = document.getElementById('video');
+    const videoUrl = "https://d198ztbnlup2iq.cloudfront.net/out/v1/2d9050c90fb94df8b78d1d98306a1a65/index_3.m3u8";
+
+    const startTime = 83000;  // התחלה
+    const stopTime  = 83500; // עצירה
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.currentTime = startTime;
+        video.play();
+      });
+
+      video.addEventListener('timeupdate', function() {
+        if (video.currentTime >= stopTime) {
+          video.pause();
+        }
+      });
+
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoUrl;
+      video.addEventListener('loadedmetadata', function() {
+        video.currentTime = startTime;
+        video.play();
+      });
+
+      video.addEventListener('timeupdate', function() {
+        if (video.currentTime >= stopTime) {
+          video.pause();
+        }
+      });
+    }
+  </script>
+</body>
+</html>
